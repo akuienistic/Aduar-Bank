@@ -1,4 +1,4 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 import { LangProvider } from "@/lib/i18n";
@@ -32,10 +32,18 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Aduar Bank — Microfinance & Community Development, South Sudan" },
-      { name: "description", content: "Collateral-free loans for rural farmers, market women, and small business owners across South Sudan. Built on trust, not paperwork." },
+      {
+        name: "description",
+        content:
+          "Collateral-free loans for rural farmers, market women, and small business owners across South Sudan. Built on trust, not paperwork.",
+      },
       { name: "author", content: "Aduar Bank" },
       { property: "og:title", content: "Aduar Bank — Microfinance for South Sudan" },
-      { property: "og:description", content: "Investing in the resilience of South Sudan's entrepreneurs through collateral-free microfinance." },
+      {
+        property: "og:description",
+        content:
+          "Investing in the resilience of South Sudan's entrepreneurs through collateral-free microfinance.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -44,7 +52,10 @@ export const Route = createRootRoute({
       { rel: "icon", type: "image/jpeg", href: "/favicon.jpg" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -54,15 +65,10 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
+    <>
+      <HeadContent />
+      {children}
+    </>
   );
 }
 
