@@ -63,7 +63,7 @@ function ProductsPage() {
           {products.map((p) => {
             const Icon = p.icon;
             return (
-              <Card key={p.title} className="group relative flex flex-col border-border p-6 transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft)]">
+              <Card key={p.title} className="group relative flex flex-col border-border p-6 transition hover:-translate-y-0.5 hover:shadow-(--shadow-soft)">
                 {p.tag && (
                   <Badge className="absolute right-4 top-4 bg-growth text-growth-foreground hover:bg-growth">{p.tag}</Badge>
                 )}

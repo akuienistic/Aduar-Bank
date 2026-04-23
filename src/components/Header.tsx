@@ -82,7 +82,7 @@ export function Header() {
             className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-1/2 min-w-[220px] flex-col bg-sidebar text-sidebar-foreground shadow-2xl">
+          <aside className="absolute left-0 top-0 flex h-full w-1/2 min-w-55 flex-col bg-sidebar text-sidebar-foreground shadow-2xl">
             <div className="flex items-center justify-between border-b border-sidebar-border p-4">
               <div className="flex items-center gap-2">
                 <img src={logo} alt="" className="h-8 w-8 rounded-full bg-white object-contain" />

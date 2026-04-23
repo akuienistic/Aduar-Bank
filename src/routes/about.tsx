@@ -19,9 +19,9 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import ayuen from "@/assets/the founder.jpg";
-import david from "@/assets/the manager.jpg";
-import simon from "@/assets/the developer.jpg";
+import ayuen from "@/assets/The Founder.jpg";
+import david from "@/assets/The Manager.jpg";
+import simon from "@/assets/The Developer.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({

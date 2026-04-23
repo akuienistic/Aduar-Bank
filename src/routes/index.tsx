@@ -12,9 +12,9 @@ import marketImg from "@/assets/juba-market.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Aduar Bank — Investing in South Sudan's Entrepreneurs" },
+      { title: "Aduar Bank: Investing in South Sudan's Entrepreneurs" },
       { name: "description", content: "Collateral-free microfinance loans for rural farmers, market women, and small business owners across South Sudan." },
-      { property: "og:title", content: "Aduar Bank — Microfinance for South Sudan" },
+      { property: "og:title", content: "Aduar Bank: Microfinance for South Sudan" },
       { property: "og:description", content: "Built on trust, not paperwork. Apply for a loan or partner with us today." },
     ],
   }),
@@ -40,7 +40,7 @@ function HomePage() {
   const [storyIdx, setStoryIdx] = useState(0);
 
   useEffect(() => {
-    const tm = setTimeout(() => setLoading(false), 3000);
+    const tm = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(tm);
   }, []);
 
@@ -50,7 +50,7 @@ function HomePage() {
     return () => clearInterval(id);
   }, [loading]);
 
-  if (loading) return <SiteLayout><Loader /></SiteLayout>;
+  if (loading) return <Loader label="Microfinance and Community Development" />;
 
   const story = stories[storyIdx];
   const StoryIcon = story.icon;
@@ -69,6 +69,9 @@ function HomePage() {
             </h1>
             <p className="mt-5 max-w-xl text-base text-trust-foreground/85 md:text-lg">
               {t("hero.subtitle")}
+            </p>
+            <p className="mt-4 max-w-xl text-base text-trust-foreground/70 md:text-lg">
+              Our field officers meet entrepreneurs and small traders where they live, so finance is simple, local, and grounded in real community relationships.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="bg-warm text-warm-foreground hover:bg-warm/90">
@@ -106,6 +109,9 @@ function HomePage() {
         <div className="text-center">
           <h2 className="font-heading text-2xl font-bold text-trust md:text-3xl">{t("diff.title")}</h2>
           <div className="mx-auto mt-2 h-1 w-12 rounded-full bg-warm" />
+          <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground">
+            These core practices help us deliver loans that are practical for rural households, fair for small businesses, and supportive of long-term community growth.
+          </p>
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {[
