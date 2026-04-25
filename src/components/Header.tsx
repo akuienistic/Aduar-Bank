@@ -1,6 +1,17 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { useState } from "react";
-import { Home, PiggyBank, FileEdit, Building2, Phone, Menu, X, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Home,
+  PiggyBank,
+  FileEdit,
+  Building2,
+  Phone,
+  Menu,
+  X,
+  ArrowRight,
+  Moon,
+  Sun,
+} from "lucide-react";
 import logo from "@/assets/aduar-logo.jpg";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -16,8 +27,27 @@ const navItems = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const { t } = useLang();
   const location = useLocation();
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("aduar-theme") : null;
+    const initialTheme = stored === "dark" ? "dark" : "light";
+    setTheme(initialTheme);
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.toggle("dark", initialTheme === "dark");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    if (typeof window !== "undefined") localStorage.setItem("aduar-theme", nextTheme);
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    }
+  };
 
   return (
     <>
@@ -49,7 +79,16 @@ export function Header() {
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden lg:block">
+          <div className="hidden items-center gap-2 lg:flex">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-transparent hover:text-foreground"
+              onClick={toggleTheme}
+              aria-label="Toggle dark mode"
+            >
+              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
             <Button asChild className="bg-warm text-warm-foreground hover:bg-warm/90">
               <Link to="/apply">
                 Apply Now <ArrowRight className="ml-1 h-4 w-4" />
@@ -59,6 +98,15 @@ export function Header() {
 
           {/* Mobile controls */}
           <div className="flex items-center gap-2 lg:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-transparent hover:text-foreground"
+              onClick={toggleTheme}
+              aria-label="Toggle dark mode"
+            >
+              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
             <Button
               variant="ghost"
               size="icon"
