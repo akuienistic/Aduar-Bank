@@ -1,5 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Phone, Home, PiggyBank, FileEdit, Building2, ChevronRight } from "lucide-react";
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Phone,
+  Home,
+  PiggyBank,
+  FileEdit,
+  Building2,
+  ChevronRight,
+} from "lucide-react";
 import logo from "@/assets/aduar-logo.jpg";
 import { useLang } from "@/lib/i18n";
 
@@ -92,6 +105,7 @@ export function Footer() {
           <p>
             © {year} Aduar Bank. {t("footer.rights")}
           </p>
+          <p className="text-[11px] opacity-90">{t("footer.protection")}</p>
           <p>
             {t("footer.built")}{" "}
             <a

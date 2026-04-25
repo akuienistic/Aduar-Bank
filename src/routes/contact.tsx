@@ -79,8 +79,8 @@ function ContactPage() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Head Office</p>
-                  <p className="mt-1 font-medium">Philadelphia, United States</p>
-                  <p className="text-sm text-muted-foreground">Pennsylvania</p>
+                  <p className="mt-1 font-medium">Virginia, United States</p>
+                  <p className="text-sm text-muted-foreground">Hampton Roads</p>
                 </div>
               </div>
             </Card>

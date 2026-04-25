@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 
 const navItems = [
   { to: "/", labelKey: "nav.home" as const, icon: Home },
+  { to: "/about", labelKey: "nav.about" as const, icon: Building2 },
   { to: "/products", labelKey: "nav.products" as const, icon: PiggyBank },
   { to: "/apply", labelKey: "nav.apply" as const, icon: FileEdit },
-  { to: "/about", labelKey: "nav.about" as const, icon: Building2 },
   { to: "/contact", labelKey: "nav.contact" as const, icon: Phone },
 ];
 
@@ -40,12 +40,8 @@ export function Header() {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition",
-                    active ? "bg-trust text-trust-foreground" : "text-foreground hover:bg-secondary",
-                  )}
+                  className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-foreground"
                 >
-                  <Icon className="h-4 w-4" />
                   {t(item.labelKey)}
                 </Link>
               );
@@ -82,13 +78,17 @@ export function Header() {
             className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-1/2 min-w-55 flex-col bg-sidebar text-sidebar-foreground shadow-2xl">
+          <aside className="absolute right-0 top-0 flex h-full w-1/2 min-w-55 flex-col bg-sidebar text-sidebar-foreground shadow-2xl">
             <div className="flex items-center justify-between border-b border-sidebar-border p-4">
               <div className="flex items-center gap-2">
                 <img src={logo} alt="" className="h-8 w-8 rounded-full bg-white object-contain" />
                 <span className="font-heading text-sm font-bold">Aduar Bank</span>
               </div>
-              <button onClick={() => setOpen(false)} aria-label="Close menu" className="rounded p-1 hover:bg-sidebar-accent">
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close menu"
+                className="rounded p-1 hover:bg-sidebar-accent"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -102,10 +102,8 @@ export function Header() {
                     to={item.to}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition",
-                      active
-                        ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                        : "hover:bg-sidebar-accent",
+                      "inline-flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition text-sidebar-foreground",
+                      active && "font-semibold",
                     )}
                   >
                     <Icon className="h-4 w-4" />

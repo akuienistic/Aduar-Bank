@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ayuen from "@/assets/The Founder.jpg";
 import david from "@/assets/The Manager.jpg";
-import simon from "@/assets/The Developer.jpg";
+import simon from "@/assets/Simon The Developer.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -47,7 +47,7 @@ const team = [
     name: "Ayuen Garang Ajok",
     role: "Founder & CEO",
     photo: ayuen,
-    location: "Philadelphia, USA",
+    location: "Virginia, USA",
     icon: GraduationCap,
     tag: "Founder",
     bio: "A 'Lost Boy of Sudan' turned economist. MPA from Cornell, former World Bank analyst, and co-founder of Sawa Sawa Network.",
@@ -55,7 +55,7 @@ const team = [
   },
   {
     name: "David Nhial Kuol Garang",
-    role: "General Manager",
+    role: "Co-Founder & General Manager",
     photo: david,
     location: "Cairo, Egypt",
     icon: Briefcase,
@@ -96,6 +96,31 @@ function AboutPage() {
           <p className="mt-4 max-w-2xl text-trust-foreground/85">
             Aduar Bank exists to unlock the economic potential of South Sudan's rural communities
             through ethical microfinance, training, and grassroots partnership.
+          </p>
+        </div>
+      </section>
+
+      {/* About */}
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div className="rounded-3xl border border-border bg-background p-8 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-medium uppercase tracking-[0.3em] text-warm">
+                About Aduar Bank
+              </p>
+              <h2 className="mt-3 font-heading text-3xl font-bold text-trust md:text-4xl">
+                A values-driven rural finance partner for South Sudan.
+              </h2>
+            </div>
+            <div className="rounded-full bg-warm/10 px-4 py-2 text-sm font-semibold text-warm">
+              Founded 20 March, 2026
+            </div>
+          </div>
+          <p className="mt-6 max-w-3xl text-base leading-7 text-muted-foreground">
+            Aduar Bank was founded to bring ethical, collateral-free microfinance to underserved
+            communities in South Sudan. We combine local field experience, financial education, and
+            digital access so rural entrepreneurs can grow businesses, build resilience, and connect
+            to formal markets without sacrificing dignity.
           </p>
         </div>
       </section>
