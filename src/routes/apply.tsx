@@ -4,7 +4,17 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { User, MapPin, Coins, Briefcase, ArrowLeft, ArrowRight, CheckCircle2, Phone, Sparkles } from "lucide-react";
+import {
+  User,
+  MapPin,
+  Coins,
+  Briefcase,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  Phone,
+  Sparkles,
+} from "lucide-react";
 import { SiteLayout } from "@/components/SiteLayout";
 import { useLang } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
@@ -17,7 +27,11 @@ export const Route = createFileRoute("/apply")({
   head: () => ({
     meta: [
       { title: "Apply for a Loan — Aduar Bank" },
-      { name: "description", content: "Four short steps. No documents needed today. Apply for a collateral-free loan with Aduar Bank." },
+      {
+        name: "description",
+        content:
+          "Four short steps. No documents needed today. Apply for a collateral-free loan with Aduar Bank.",
+      },
       { property: "og:title", content: "Apply for a Loan — Aduar Bank" },
       { property: "og:description", content: "Simple, mobile-friendly loan application." },
     ],
@@ -53,8 +67,13 @@ function ApplyPage() {
     resolver: zodResolver(schema),
     mode: "onTouched",
     defaultValues: {
-      fullName: "", phone: "", village: "", region: "",
-      amount: 250, loanType: "Farmer's Support Loan", purpose: "",
+      fullName: "",
+      phone: "",
+      village: "",
+      region: "",
+      amount: 250,
+      loanType: "Farmer's Support Loan",
+      purpose: "",
     },
   });
 
@@ -84,11 +103,21 @@ function ApplyPage() {
             <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full bg-growth/15 text-growth">
               <CheckCircle2 className="h-8 w-8" />
             </div>
-            <h1 className="mt-4 font-heading text-2xl font-bold text-trust">Thank you, {form.getValues("fullName").split(" ")[0]}!</h1>
+            <h1 className="mt-4 font-heading text-2xl font-bold text-trust">
+              Thank you, {form.getValues("fullName").split(" ")[0]}!
+            </h1>
             <p className="mt-3 text-muted-foreground">
-              Your application has been received. A field officer will call <strong>{form.getValues("phone")}</strong> within 2 working days.
+              Your application has been received. A field officer will call{" "}
+              <strong>{form.getValues("phone")}</strong> within 2 working days.
             </p>
-            <Button onClick={() => { setDone(false); setStep(0); form.reset(); }} className="mt-6 bg-warm text-warm-foreground hover:bg-warm/90">
+            <Button
+              onClick={() => {
+                setDone(false);
+                setStep(0);
+                form.reset();
+              }}
+              className="mt-6 bg-warm text-warm-foreground hover:bg-warm/90"
+            >
               Submit another application
             </Button>
           </Card>
@@ -104,7 +133,9 @@ function ApplyPage() {
     <SiteLayout>
       <section className="border-b border-border bg-secondary/40 py-10">
         <div className="mx-auto max-w-2xl px-4 md:px-6">
-          <h1 className="font-heading text-3xl font-bold text-trust md:text-4xl">{t("apply.title")}</h1>
+          <h1 className="font-heading text-3xl font-bold text-trust md:text-4xl">
+            {t("apply.title")}
+          </h1>
           <p className="mt-2 text-muted-foreground">{t("apply.subtitle")}</p>
         </div>
       </section>
@@ -113,7 +144,9 @@ function ApplyPage() {
         {/* Progress */}
         <div className="mb-6">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Step {step + 1} of {steps.length}</span>
+            <span>
+              Step {step + 1} of {steps.length}
+            </span>
             <span>{Math.round(progress)}%</span>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
@@ -136,7 +169,11 @@ function ApplyPage() {
                   <Input {...form.register("fullName")} placeholder="e.g. Mary Achol Deng" />
                 </Field>
                 <Field label="Phone number" error={form.formState.errors.phone?.message}>
-                  <Input type="tel" {...form.register("phone")} placeholder="e.g. +211 920 000 000" />
+                  <Input
+                    type="tel"
+                    {...form.register("phone")}
+                    placeholder="e.g. +211 920 000 000"
+                  />
                 </Field>
               </>
             )}
@@ -152,11 +189,23 @@ function ApplyPage() {
             )}
             {step === 2 && (
               <>
-                <Field label="Loan amount needed (USD, $100 – $500)" error={form.formState.errors.amount?.message}>
-                  <Input type="number" inputMode="numeric" min={100} max={500} {...form.register("amount")} />
+                <Field
+                  label="Loan amount needed (USD, $100 – $500)"
+                  error={form.formState.errors.amount?.message}
+                >
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    min={100}
+                    max={500}
+                    {...form.register("amount")}
+                  />
                 </Field>
                 <Field label="Loan type" error={form.formState.errors.loanType?.message}>
-                  <select {...form.register("loanType")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <select
+                    {...form.register("loanType")}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
                     <option>Farmer's Support Loan</option>
                     <option>Women's Market Loan</option>
                     <option>Artisan & Trades Loan</option>
@@ -169,7 +218,11 @@ function ApplyPage() {
             )}
             {step === 3 && (
               <Field label="Business purpose" error={form.formState.errors.purpose?.message}>
-                <Textarea rows={5} {...form.register("purpose")} placeholder="Briefly describe how you will use this loan..." />
+                <Textarea
+                  rows={5}
+                  {...form.register("purpose")}
+                  placeholder="Briefly describe how you will use this loan..."
+                />
               </Field>
             )}
 
@@ -184,7 +237,11 @@ function ApplyPage() {
               </Button>
 
               {step < steps.length - 1 ? (
-                <Button type="button" onClick={next} className="bg-trust text-trust-foreground hover:opacity-90">
+                <Button
+                  type="button"
+                  onClick={next}
+                  className="bg-trust text-trust-foreground hover:opacity-90"
+                >
                   Next <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               ) : (
@@ -197,14 +254,26 @@ function ApplyPage() {
         </Card>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Prefer to talk? Call a field officer: <a className="text-warm hover:underline" href="tel:+211920100001"><Phone className="mr-1 inline h-3 w-3" />+211 920 100 001</a>
+          Prefer to talk? Field officer contact is yet to be assigned:{" "}
+          <span className="text-warm">
+            <Phone className="mr-1 inline h-3 w-3" />
+            Yet to be assigned
+          </span>
         </p>
       </section>
     </SiteLayout>
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <Label className="mb-1.5 block text-sm font-medium">{label}</Label>

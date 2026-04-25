@@ -19,7 +19,7 @@ export const dict: Dict = {
     ar: "Nestasmir fi sumuud ashab al-mashari'i fi Janub al-Sudan.",
   },
   "hero.subtitle": {
-    en: "Collateral-free loans for rural farmers, market women, and small business owners, built on trust, not paperwork.",
+    en: "Collateral-free loans for rural farmers, market women, and small business owners, built on trust, with minimal paperwork.",
     ar: "Gurud bidun damaan le al-mazariin wa nisuwan al-suuk wa ashab al-mashari'i al-saghira — mabniyya ala al-thiqa.",
   },
   "hero.cta1": { en: "Need a Loan?", ar: "Awzin Gurud?" },
