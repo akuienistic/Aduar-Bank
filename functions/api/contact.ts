@@ -10,6 +10,9 @@ function json(data: unknown, init?: ResponseInit) {
   return new Response(JSON.stringify(data), {
     headers: {
       "content-type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
       ...(init?.headers ?? {}),
     },
     ...init,
@@ -176,6 +179,28 @@ function emailTemplate({
     </table>
   </body>
 </html>`;
+}
+
+export async function onRequest(context: {
+  request: Request;
+  env: Record<string, string | undefined>;
+}) {
+  if (context.request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
+  }
+
+  if (context.request.method !== "POST") {
+    return json({ ok: false, error: "Method not allowed" }, { status: 405 });
+  }
+
+  return onRequestPost(context);
 }
 
 export async function onRequestPost(context: {
