@@ -256,7 +256,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       if (!resendRes.ok) {
         const text = await resendRes.text().catch(() => "");
-        return res.status(502).json({ ok: false, error: "Email provider error", details: text.slice(0, 2000) });
+        return res
+          .status(502)
+          .json({ ok: false, error: "Email provider error", details: text.slice(0, 2000) });
       }
     }
 
