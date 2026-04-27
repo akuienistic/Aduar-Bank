@@ -109,7 +109,7 @@ function ContactPage() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Email</p>
-                  <a href="mailto:ayuenajok@gmail.com" className="mt-1 block font-medium hover:text-warm">ayuenajok@gmail.com</a>
+                  <a href="mailto:akuienatem80@gmail.com" className="mt-1 block font-medium hover:text-warm">akuienatem80@gmail.com</a>
                 </div>
               </div>
             </Card>
