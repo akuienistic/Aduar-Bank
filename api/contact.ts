@@ -188,11 +188,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const MAIL_FROM =
       process.env.MAIL_FROM || (SMTP_USER ? `Aduar Bank <${SMTP_USER}>` : undefined);
     const MAIL_TO = process.env.MAIL_TO || process.env.EMAIL_TO || "ayuenajok@gmail.com";
+    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    const RESEND_FROM = process.env.RESEND_FROM || MAIL_FROM;
 
-    if (!SMTP_USER || !SMTP_PASS || !MAIL_FROM || !MAIL_TO) {
-      return res
-        .status(500)
-        .json({ ok: false, error: "Missing SMTP config (SMTP_USER/SMTP_PASS/MAIL_FROM/MAIL_TO)" });
+    if ((!SMTP_USER || !SMTP_PASS) && (!RESEND_API_KEY || !RESEND_FROM)) {
+      return res.status(500).json({
+        ok: false,
+        error:
+          "Missing email provider config. Set SMTP_USER/SMTP_PASS (for SMTP) or RESEND_API_KEY/RESEND_FROM (for Resend).",
+      });
     }
 
     const raw = (req.body ?? {}) as Partial<ContactPayload>;
@@ -220,20 +224,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       message: payload.message,
     });
 
-    const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_PORT === 465,
-      auth: { user: SMTP_USER, pass: SMTP_PASS },
-    });
+    if (SMTP_USER && SMTP_PASS) {
+      const transporter = nodemailer.createTransport({
+        host: SMTP_HOST,
+        port: SMTP_PORT,
+        secure: SMTP_PORT === 465,
+        auth: { user: SMTP_USER, pass: SMTP_PASS },
+      });
 
-    await transporter.sendMail({
-      from: MAIL_FROM,
-      to: MAIL_TO,
-      subject: `${payload.subject}`,
-      html,
-      replyTo: payload.email,
-    });
+      await transporter.sendMail({
+        from: MAIL_FROM,
+        to: MAIL_TO,
+        subject: `${payload.subject}`,
+        html,
+        replyTo: payload.email,
+      });
+    } else {
+      const resendRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: RESEND_FROM,
+          to: [MAIL_TO],
+          subject: `Contact: ${payload.subject}`,
+          html,
+        }),
+      });
+
+      if (!resendRes.ok) {
+        const text = await resendRes.text().catch(() => "");
+        return res.status(502).json({ ok: false, error: "Email provider error", details: text.slice(0, 2000) });
+      }
+    }
 
     return res.status(200).json({ ok: true });
   } catch (e) {

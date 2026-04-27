@@ -213,8 +213,22 @@ export async function onRequestPost(context: {
     // MailChannels (Cloudflare Workers/Pages compatible) via HTTP.
     // NOTE: This call only succeeds when running on Cloudflare (not plain local Vite),
     // and typically requires a "Domain Lockdown" DNS TXT record for your domain.
-    const fromEmail = assertEnv(context.env, "MAIL_FROM"); // e.g. "Aduar Bank <no-reply@aduarbank.org>"
+    const mailFrom = context.env.MAIL_FROM;
+    const resendApiKey = context.env.RESEND_API_KEY;
+    const resendFrom = context.env.RESEND_FROM || mailFrom;
+    const fromEmail = mailFrom || resendFrom;
     const siteUrl = context.env.SITE_URL; // optional, used for tagging/logging
+
+    if (!fromEmail || (!mailFrom && !resendApiKey)) {
+      return json(
+        {
+          ok: false,
+          error:
+            "Missing email provider config. Set MAIL_FROM for MailChannels or RESEND_API_KEY/RESEND_FROM for Resend.",
+        },
+        { status: 500 },
+      );
+    }
 
     const raw = (await context.request.json()) as Partial<ContactPayload>;
     const payload: ContactPayload = {
@@ -243,6 +257,32 @@ export async function onRequestPost(context: {
 
     const to = context.env.MAIL_TO || context.env.EMAIL_TO || "ayuenajok@gmail.com";
     const emailSubject = `Contact: ${payload.subject}`;
+
+    if (resendApiKey && resendFrom) {
+      const resendRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: resendFrom,
+          to: [to],
+          subject: emailSubject,
+          html,
+        }),
+      });
+
+      if (!resendRes.ok) {
+        const text = await resendRes.text().catch(() => "");
+        return json(
+          { ok: false, error: "Email provider error", details: text.slice(0, 2000) },
+          { status: 502 },
+        );
+      }
+
+      return json({ ok: true });
+    }
 
     const mcPayload = {
       personalizations: [
