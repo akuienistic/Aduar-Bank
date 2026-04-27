@@ -7,7 +7,12 @@ export type ContactFormPayload = {
 };
 
 export async function sendContactMessage(payload: ContactFormPayload) {
-  const res = await fetch("/api/contact", {
+  const endpoint =
+    (import.meta as any).env?.VITE_CONTACT_API_URL ||
+    (import.meta as any).env?.VITE_CONTACT_ENDPOINT ||
+    "/api/contact";
+
+  const res = await fetch(String(endpoint), {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),

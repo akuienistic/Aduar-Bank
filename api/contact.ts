@@ -189,6 +189,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const SMTP_PASS = process.env.SMTP_PASS || process.env.SMTP_PASSWORD;
     const MAIL_FROM = process.env.MAIL_FROM || (SMTP_USER ? `Aduar Bank <${SMTP_USER}>` : undefined);
     const MAIL_TO = process.env.MAIL_TO || process.env.EMAIL_TO;
+    const SMTP_SECURE =
+      typeof process.env.SMTP_SECURE === "string"
+        ? ["1", "true", "yes", "on"].includes(process.env.SMTP_SECURE.toLowerCase())
+        : SMTP_PORT === 465;
 
     if (!SMTP_USER || !SMTP_PASS) {
       return res.status(500).json({
@@ -240,9 +244,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
       port: SMTP_PORT,
-      secure: SMTP_PORT === 465,
+      secure: SMTP_SECURE,
       auth: { user: SMTP_USER, pass: SMTP_PASS },
+      // Serverless-friendly timeouts (avoid hanging lambdas)
+      connectionTimeout: 15_000,
+      greetingTimeout: 15_000,
+      socketTimeout: 20_000,
+      // Common for 587 STARTTLS setups
+      requireTLS: !SMTP_SECURE && SMTP_PORT === 587,
     });
+
+    // Verify connection/auth first so failures are clearer (and faster) in production.
+    try {
+      await transporter.verify();
+    } catch (err) {
+      const e = err as any;
+      return res.status(502).json({
+        ok: false,
+        error: "SMTP verify failed",
+        details: {
+          host: SMTP_HOST,
+          port: SMTP_PORT,
+          secure: SMTP_SECURE,
+          code: e?.code,
+          command: e?.command,
+          response: e?.response,
+          message: e?.message,
+        },
+      });
+    }
 
     await transporter.sendMail({
       from: MAIL_FROM,
@@ -254,8 +284,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(200).json({ ok: true });
   } catch (e) {
-    return res
-      .status(502)
-      .json({ ok: false, error: e instanceof Error ? e.message : "Email send failed" });
+    const err = e as any;
+    return res.status(502).json({
+      ok: false,
+      error: "Email send failed",
+      details: {
+        code: err?.code,
+        command: err?.command,
+        response: err?.response,
+        message: err?.message ?? (e instanceof Error ? e.message : String(e)),
+      },
+    });
   }
 }
