@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { sendContactMessage } from "@/lib/contact";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -42,12 +43,18 @@ function ContactPage() {
     defaultValues: { name: "", email: "", phone: "", subject: "", message: "" },
   });
 
-  const onSubmit = (values: FormValues) => {
-    console.log("Contact form:", values);
-    toast.success("Message sent! We'll be in touch within 2 working days.", {
-      icon: <CheckCircle2 className="h-4 w-4" />,
-    });
-    form.reset();
+  const onSubmit = async (values: FormValues) => {
+    try {
+      await sendContactMessage(values);
+      toast.success("Message sent! We'll be in touch within 2 working days.", {
+        icon: <CheckCircle2 className="h-4 w-4" />,
+      });
+      form.reset();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to send message. Please try again.", {
+        icon: <AlertCircle className="h-4 w-4" />,
+      });
+    }
   };
 
   const onInvalid = () => {
@@ -91,7 +98,7 @@ function ContactPage() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Phone</p>
-                  <a href="tel:+211920000000" className="mt-1 block font-medium hover:text-warm">+211 920 000 000</a>
+                  <a href="tel:+1 (202) 494-5114" className="mt-1 block font-medium hover:text-warm">+1 (202) 494-5114</a>
                 </div>
               </div>
             </Card>
@@ -102,7 +109,7 @@ function ContactPage() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Email</p>
-                  <a href="mailto:info@aduarbank.org" className="mt-1 block font-medium hover:text-warm">info@aduarbank.org</a>
+                  <a href="mailto:ayuenajok@gmail.com" className="mt-1 block font-medium hover:text-warm">ayuenajok@gmail.com</a>
                 </div>
               </div>
             </Card>
