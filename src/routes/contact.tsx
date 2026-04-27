@@ -3,7 +3,20 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { User, Mail, Phone, MessageSquare, Send, MapPin, CheckCircle2, AlertCircle, Clock, Sparkles } from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+  User,
+  Mail,
+  Phone,
+  MessageSquare,
+  Send,
+  MapPin,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import { SiteLayout } from "@/components/SiteLayout";
 import { useLang } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
@@ -37,6 +50,8 @@ type FormValues = z.infer<typeof schema>;
 
 function ContactPage() {
   const { t } = useLang();
+  const [isSending, setIsSending] = useState(false);
+  const [sent, setSent] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     mode: "onTouched",
@@ -45,15 +60,19 @@ function ContactPage() {
 
   const onSubmit = async (values: FormValues) => {
     try {
+      setIsSending(true);
       await sendContactMessage(values);
       toast.success("Message sent! We'll be in touch within 2 working days.", {
         icon: <CheckCircle2 className="h-4 w-4" />,
       });
       form.reset();
+      setSent(true);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to send message. Please try again.", {
         icon: <AlertCircle className="h-4 w-4" />,
       });
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -62,6 +81,11 @@ function ContactPage() {
       icon: <AlertCircle className="h-4 w-4" />,
     });
   };
+
+  const responsePromise = useMemo(() => {
+    // used only for consistent copy; keep it stable between renders
+    return "We typically reply within 2 working days.";
+  }, []);
 
   return (
     <SiteLayout>
@@ -91,28 +115,6 @@ function ContactPage() {
                 </div>
               </div>
             </Card>
-            <Card className="border-border p-5">
-              <div className="flex items-start gap-3">
-                <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-warm/10 text-warm">
-                  <Phone className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Phone</p>
-                  <a href="tel:+1 (202) 494-5114" className="mt-1 block font-medium hover:text-warm">+1 (202) 494-5114</a>
-                </div>
-              </div>
-            </Card>
-            <Card className="border-border p-5">
-              <div className="flex items-start gap-3">
-                <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-warm/10 text-warm">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Email</p>
-                  <a href="mailto:akuienatem80@gmail.com" className="mt-1 block font-medium hover:text-warm">akuienatem80@gmail.com</a>
-                </div>
-              </div>
-            </Card>
             <Card className="border-border bg-trust p-5 text-trust-foreground">
               <div className="flex items-start gap-3">
                 <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/10">
@@ -125,15 +127,52 @@ function ContactPage() {
                 </div>
               </div>
             </Card>
+            <Card className="border-border p-5">
+              <div className="flex items-start gap-3">
+                <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-warm/10 text-warm">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Privacy</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Your message is sent securely to our team inbox. We never publish the receiving address on the site.
+                  </p>
+                </div>
+              </div>
+            </Card>
           </div>
 
           {/* Form — 3 cols */}
           <Card className="border-border p-6 md:col-span-3 md:p-8">
             <div className="mb-6 border-b border-border pb-4">
               <h2 className="font-heading text-xl font-semibold text-trust">Send us a message</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Fill in the form and we'll get back to you shortly.</p>
+              <p className="mt-1 text-sm text-muted-foreground">{responsePromise}</p>
             </div>
-            <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-5" noValidate>
+            {sent ? (
+              <div className="rounded-xl border border-border bg-secondary/40 p-5">
+                <div className="flex items-start gap-3">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-warm/10 text-warm">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-heading text-lg font-semibold text-trust">Thanks — we got your message.</div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      We’ll review it and reply to your email address as soon as possible.
+                    </p>
+                    <div className="mt-4">
+                      <Button
+                        type="button"
+                        className="bg-warm text-warm-foreground hover:bg-warm/90"
+                        onClick={() => setSent(false)}
+                      >
+                        Send another message
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-5" noValidate>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label className="mb-1.5 block text-sm font-medium">Your name</Label>
@@ -179,11 +218,12 @@ function ContactPage() {
               </div>
 
               <div className="flex flex-col-reverse items-stretch justify-between gap-3 border-t border-border pt-5 sm:flex-row sm:items-center">
-                <Button type="submit" className="bg-warm text-warm-foreground hover:bg-warm/90">
-                  <Send className="mr-2 h-4 w-4" /> Send message
+                <Button type="submit" className="bg-warm text-warm-foreground hover:bg-warm/90" disabled={isSending}>
+                  <Send className="mr-2 h-4 w-4" /> {isSending ? "Sending..." : "Send message"}
                 </Button>
               </div>
-            </form>
+              </form>
+            )}
           </Card>
         </div>
       </section>
