@@ -160,7 +160,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const SMTP_USER = process.env.SMTP_USER;
     const SMTP_PASS = process.env.SMTP_PASS;
     const MAIL_FROM = process.env.MAIL_FROM || (SMTP_USER ? `Aduar Bank <${SMTP_USER}>` : undefined);
-    const to = "ayuenajok@gmail.com";
+    const to = process.env.MAIL_TO || "ayuenajok@gmail.com";
 
     if (!SMTP_USER || !SMTP_PASS || !MAIL_FROM) {
       return res.status(500).json({ ok: false, error: "Missing SMTP config (SMTP_USER/SMTP_PASS/MAIL_FROM)" });

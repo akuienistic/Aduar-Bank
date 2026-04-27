@@ -11,6 +11,9 @@ SMTP_PASS=
 # Example: MAIL_FROM="Aduar Bank <yourgmail@gmail.com>"
 MAIL_FROM=
 
+# Recipient for contact form submissions
+MAIL_TO=ayuenajok@gmail.com
+
 # Optional: used for tagging/logging
 SITE_URL=http://localhost:5173
 
