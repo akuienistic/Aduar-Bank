@@ -22,6 +22,17 @@ function assertEnv(env: Record<string, string | undefined>, key: string) {
   return val;
 }
 
+async function loadDotenv() {
+  if (typeof process === "undefined" || process.env.NODE_ENV === "production") return;
+
+  try {
+    const dotenv = await import("dotenv");
+    dotenv.config();
+  } catch {
+    // ignore missing dotenv in environments where it's not available
+  }
+}
+
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -171,6 +182,8 @@ export async function onRequestPost(context: {
   request: Request;
   env: Record<string, string | undefined>;
 }) {
+  await loadDotenv();
+
   try {
     // MailChannels (Cloudflare Workers/Pages compatible) via HTTP.
     // NOTE: This call only succeeds when running on Cloudflare (not plain local Vite),

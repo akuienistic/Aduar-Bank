@@ -13,11 +13,18 @@ export async function sendContactMessage(payload: ContactFormPayload) {
     body: JSON.stringify(payload),
   });
 
-  const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+  const text = await res.text().catch(() => "");
+  let data: { ok?: boolean; error?: string } | null = null;
+
+  try {
+    data = text ? (JSON.parse(text) as { ok?: boolean; error?: string }) : null;
+  } catch {
+    data = null;
+  }
 
   if (!res.ok || !data?.ok) {
-    const msg = data?.error || "Failed to send message";
+    const msg =
+      data?.error || text || `${res.status} ${res.statusText}` || "Failed to send message";
     throw new Error(msg);
   }
 }
-
