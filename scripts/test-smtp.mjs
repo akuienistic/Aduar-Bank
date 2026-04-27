@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-function parseDevVars(text) {
+function parseEnvFile(text) {
   const env = {};
   for (const rawLine of text.split(/\r?\n/)) {
     const line = rawLine.trim();
@@ -15,7 +15,14 @@ function parseDevVars(text) {
   return env;
 }
 
-const envFromFile = parseDevVars(fs.readFileSync(path.join(process.cwd(), ".dev.vars"), "utf8"));
+const candidates = [".env", ".dev.vars", "env"].map((p) => path.join(process.cwd(), p));
+const envPath = candidates.find((p) => fs.existsSync(p));
+if (!envPath) {
+  console.error("No env file found. Create one of: .env, .dev.vars, env");
+  process.exit(2);
+}
+
+const envFromFile = parseEnvFile(fs.readFileSync(envPath, "utf8"));
 
 // set process.env for the serverless handler
 for (const [k, v] of Object.entries(envFromFile)) {
