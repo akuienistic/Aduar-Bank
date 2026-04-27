@@ -262,8 +262,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(204).end();
   }
 
-  if (req.method !== "POST")
-    return res.status(405).json({ ok: false, error: "Method not allowed" });
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      ok: false,
+      error: "Method not allowed",
+      method: req.method ?? null,
+      hint: "Send a POST request to /api/contact",
+    });
+  }
 
   await loadDotenv();
 
