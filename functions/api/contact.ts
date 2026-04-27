@@ -188,9 +188,12 @@ export async function onRequestPost(context: {
     };
 
     if (payload.name.length < 2) return json({ ok: false, error: "Invalid name" }, { status: 400 });
-    if (!isValidEmail(payload.email)) return json({ ok: false, error: "Invalid email" }, { status: 400 });
-    if (payload.subject.length < 3) return json({ ok: false, error: "Invalid subject" }, { status: 400 });
-    if (payload.message.length < 10) return json({ ok: false, error: "Invalid message" }, { status: 400 });
+    if (!isValidEmail(payload.email))
+      return json({ ok: false, error: "Invalid email" }, { status: 400 });
+    if (payload.subject.length < 3)
+      return json({ ok: false, error: "Invalid subject" }, { status: 400 });
+    if (payload.message.length < 10)
+      return json({ ok: false, error: "Invalid message" }, { status: 400 });
 
     const html = emailTemplate({
       name: payload.name,
@@ -200,7 +203,7 @@ export async function onRequestPost(context: {
       message: payload.message,
     });
 
-    const to = "ayuenajok@gmail.com";
+    const to = context.env.MAIL_TO || context.env.EMAIL_TO || "ayuenajok@gmail.com";
     const emailSubject = `Contact: ${payload.subject}`;
 
     const mcPayload = {
@@ -209,12 +212,17 @@ export async function onRequestPost(context: {
           to: [{ email: to }],
         },
       ],
-      from: { email: fromEmail.includes("<") ? fromEmail.match(/<([^>]+)>/)?.[1] ?? fromEmail : fromEmail, name: fromEmail.includes("<") ? fromEmail.split("<")[0].trim().replace(/^"|"$/g, "") : "Aduar Bank" },
+      from: {
+        email: fromEmail.includes("<")
+          ? (fromEmail.match(/<([^>]+)>/)?.[1] ?? fromEmail)
+          : fromEmail,
+        name: fromEmail.includes("<")
+          ? fromEmail.split("<")[0].trim().replace(/^"|"$/g, "")
+          : "Aduar Bank",
+      },
       reply_to: { email: payload.email, name: payload.name },
       subject: emailSubject,
-      content: [
-        { type: "text/html", value: html },
-      ],
+      content: [{ type: "text/html", value: html }],
       headers: {
         "X-Contact-Source": "contact-form",
         "X-Site-Url": siteUrl ? String(siteUrl) : "unknown",
@@ -245,4 +253,3 @@ export async function onRequestPost(context: {
     );
   }
 }
-

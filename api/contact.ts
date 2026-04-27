@@ -1,5 +1,8 @@
+import * as dotenv from "dotenv";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import nodemailer from "nodemailer";
+
+dotenv.config();
 
 type ContactPayload = {
   name: string;
@@ -152,18 +155,22 @@ function emailTemplate({
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "POST") return res.status(405).json({ ok: false, error: "Method not allowed" });
+  if (req.method !== "POST")
+    return res.status(405).json({ ok: false, error: "Method not allowed" });
 
   try {
     const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
     const SMTP_PORT = Number(process.env.SMTP_PORT || "465");
     const SMTP_USER = process.env.SMTP_USER;
     const SMTP_PASS = process.env.SMTP_PASS;
-    const MAIL_FROM = process.env.MAIL_FROM || (SMTP_USER ? `Aduar Bank <${SMTP_USER}>` : undefined);
-    const to = process.env.MAIL_TO || "ayuenajok@gmail.com";
+    const MAIL_FROM =
+      process.env.MAIL_FROM || (SMTP_USER ? `Aduar Bank <${SMTP_USER}>` : undefined);
+    const MAIL_TO = process.env.MAIL_TO || process.env.EMAIL_TO || "ayuenajok@gmail.com";
 
-    if (!SMTP_USER || !SMTP_PASS || !MAIL_FROM) {
-      return res.status(500).json({ ok: false, error: "Missing SMTP config (SMTP_USER/SMTP_PASS/MAIL_FROM)" });
+    if (!SMTP_USER || !SMTP_PASS || !MAIL_FROM || !MAIL_TO) {
+      return res
+        .status(500)
+        .json({ ok: false, error: "Missing SMTP config (SMTP_USER/SMTP_PASS/MAIL_FROM/MAIL_TO)" });
     }
 
     const raw = (req.body ?? {}) as Partial<ContactPayload>;
@@ -176,9 +183,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     if (payload.name.length < 2) return res.status(400).json({ ok: false, error: "Invalid name" });
-    if (!isValidEmail(payload.email)) return res.status(400).json({ ok: false, error: "Invalid email" });
-    if (payload.subject.length < 3) return res.status(400).json({ ok: false, error: "Invalid subject" });
-    if (payload.message.length < 10) return res.status(400).json({ ok: false, error: "Invalid message" });
+    if (!isValidEmail(payload.email))
+      return res.status(400).json({ ok: false, error: "Invalid email" });
+    if (payload.subject.length < 3)
+      return res.status(400).json({ ok: false, error: "Invalid subject" });
+    if (payload.message.length < 10)
+      return res.status(400).json({ ok: false, error: "Invalid message" });
 
     const html = emailTemplate({
       name: payload.name,
@@ -197,7 +207,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     await transporter.sendMail({
       from: MAIL_FROM,
-      to,
+      to: MAIL_TO,
       subject: `Contact: ${payload.subject}`,
       html,
       replyTo: payload.email,
@@ -205,7 +215,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(200).json({ ok: true });
   } catch (e) {
-    return res.status(502).json({ ok: false, error: e instanceof Error ? e.message : "Email send failed" });
+    return res
+      .status(502)
+      .json({ ok: false, error: e instanceof Error ? e.message : "Email send failed" });
   }
 }
-
