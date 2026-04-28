@@ -6,37 +6,40 @@ export type ContactFormPayload = {
   message: string;
 };
 
+import emailjs from "@emailjs/browser";
+
+const EMAILJS_SERVICE_ID = (import.meta as any).env?.VITE_EMAILJS_SERVICE_ID as string | undefined;
+const EMAILJS_TEMPLATE_ID = (import.meta as any).env?.VITE_EMAILJS_TEMPLATE_ID as string | undefined;
+const EMAILJS_PUBLIC_KEY = (import.meta as any).env?.VITE_EMAILJS_PUBLIC_KEY as string | undefined;
+const EMAILJS_TO_EMAIL = (import.meta as any).env?.VITE_EMAILJS_TO_EMAIL as string | undefined;
+
 export async function sendContactMessage(payload: ContactFormPayload) {
-  const endpoint =
-    (import.meta as any).env?.VITE_CONTACT_API_URL ||
-    (import.meta as any).env?.VITE_CONTACT_ENDPOINT ||
-    "/api/contact";
-
-  const controller = new AbortController();
-  const timeoutMs = Number((import.meta as any).env?.VITE_CONTACT_TIMEOUT_MS || 25_000);
-  const t = window.setTimeout(() => controller.abort(), Number.isFinite(timeoutMs) ? timeoutMs : 25_000);
-
-  const res = await fetch(String(endpoint), {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(payload),
-    signal: controller.signal,
-  });
-
-  window.clearTimeout(t);
-
-  const text = await res.text().catch(() => "");
-  let data: { ok?: boolean; error?: string } | null = null;
-
-  try {
-    data = text ? (JSON.parse(text) as { ok?: boolean; error?: string }) : null;
-  } catch {
-    data = null;
+  if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+    throw new Error("Email service is not configured. Please set VITE_EMAILJS_* environment variables.");
   }
 
-  if (!res.ok || !data?.ok) {
+  const params = {
+    to_email: EMAILJS_TO_EMAIL || "",
+    from_name: payload.name,
+    reply_to: payload.email,
+    from_email: payload.email,
+    phone: payload.phone || "",
+    subject: payload.subject,
+    message: payload.message,
+    year: String(new Date().getFullYear()),
+  };
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params, {
+      publicKey: EMAILJS_PUBLIC_KEY,
+    });
+  } catch (e) {
+    const err = e as any;
     const msg =
-      data?.error || text || `${res.status} ${res.statusText}` || "Failed to send message";
+      err?.text ||
+      err?.message ||
+      (typeof err === "string" ? err : "") ||
+      "Failed to send message";
     throw new Error(msg);
   }
 }
