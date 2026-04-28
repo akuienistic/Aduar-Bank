@@ -1,27 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  User,
-  MapPin,
-  Coins,
-  Briefcase,
-  ArrowLeft,
   ArrowRight,
+  Clock,
   CheckCircle2,
-  Phone,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { SiteLayout } from "@/components/SiteLayout";
 import { useLang } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/apply")({
   head: () => ({
@@ -30,255 +19,139 @@ export const Route = createFileRoute("/apply")({
       {
         name: "description",
         content:
-          "Four short steps. No documents needed today. Apply for a collateral-free loan with Aduar Bank.",
+          "Loan applications are launching soon. In the meantime, contact Aduar Bank and we’ll guide you through next steps.",
       },
       { property: "og:title", content: "Apply for a Loan — Aduar Bank" },
-      { property: "og:description", content: "Simple, mobile-friendly loan application." },
+      { property: "og:description", content: "Coming soon — a simple, mobile-friendly loan application." },
     ],
   }),
   component: ApplyPage,
 });
 
-const schema = z.object({
-  fullName: z.string().trim().min(2, "Please enter your full name").max(80),
-  phone: z.string().trim().min(7, "Phone number is too short").max(20),
-  village: z.string().trim().min(2, "Please enter your village").max(80),
-  region: z.string().trim().min(2, "Please enter your region").max(80),
-  amount: z.coerce.number().min(100, "Minimum $100").max(500, "Maximum $500"),
-  loanType: z.string().trim().min(2, "Please choose a loan type").max(60),
-  purpose: z.string().trim().min(10, "Tell us a bit more (10+ characters)").max(500),
-});
-
-type FormValues = z.infer<typeof schema>;
-
-const steps = [
-  { title: "Who are you?", icon: User, fields: ["fullName", "phone"] as const },
-  { title: "Where do you live?", icon: MapPin, fields: ["village", "region"] as const },
-  { title: "How much do you need?", icon: Coins, fields: ["amount", "loanType"] as const },
-  { title: "What is it for?", icon: Briefcase, fields: ["purpose"] as const },
-];
-
 function ApplyPage() {
   const { t } = useLang();
-  const [step, setStep] = useState(0);
-  const [done, setDone] = useState(false);
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    mode: "onTouched",
-    defaultValues: {
-      fullName: "",
-      phone: "",
-      village: "",
-      region: "",
-      amount: 250,
-      loanType: "Farmer's Support Loan",
-      purpose: "",
-    },
-  });
-
-  const next = async () => {
-    const fields = steps[step].fields;
-    const ok = await form.trigger(fields);
-    if (!ok) {
-      toast.error("Please fix the highlighted fields", { icon: <Sparkles className="h-4 w-4" /> });
-      return;
-    }
-    setStep((s) => Math.min(s + 1, steps.length - 1));
-  };
-
-  const onSubmit = (values: FormValues) => {
-    console.log("Loan application:", values);
-    setDone(true);
-    toast.success("Application received! A field officer will call you within 2 working days.", {
-      icon: <CheckCircle2 className="h-4 w-4" />,
-    });
-  };
-
-  if (done) {
-    return (
-      <SiteLayout>
-        <section className="mx-auto max-w-2xl px-4 py-20 md:px-6">
-          <Card className="border-border p-8 text-center">
-            <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full bg-growth/15 text-growth">
-              <CheckCircle2 className="h-8 w-8" />
-            </div>
-            <h1 className="mt-4 font-heading text-2xl font-bold text-trust">
-              Thank you, {form.getValues("fullName").split(" ")[0]}!
-            </h1>
-            <p className="mt-3 text-muted-foreground">
-              Your application has been received. A field officer will call{" "}
-              <strong>{form.getValues("phone")}</strong> within 2 working days.
-            </p>
-            <Button
-              onClick={() => {
-                setDone(false);
-                setStep(0);
-                form.reset();
-              }}
-              className="mt-6 bg-warm text-warm-foreground hover:bg-warm/90"
-            >
-              Submit another application
-            </Button>
-          </Card>
-        </section>
-      </SiteLayout>
-    );
-  }
-
-  const Icon = steps[step].icon;
-  const progress = ((step + 1) / steps.length) * 100;
 
   return (
     <SiteLayout>
-      <section className="border-b border-border bg-secondary/40 py-10">
-        <div className="mx-auto max-w-2xl px-4 md:px-6">
-          <h1 className="font-heading text-3xl font-bold text-trust md:text-4xl">
+      <section className="relative overflow-hidden border-b border-border bg-secondary/40 py-12">
+        <div className="pointer-events-none absolute inset-0 opacity-70">
+          <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full bg-warm/20 blur-3xl" />
+          <div className="absolute -right-24 top-12 h-80 w-80 rounded-full bg-trust/20 blur-3xl" />
+        </div>
+
+        <div className="relative mx-auto max-w-5xl px-4 md:px-6">
+          <Badge className="bg-warm text-warm-foreground hover:bg-warm">
+            <Sparkles className="mr-1 h-3 w-3" /> Coming soon
+          </Badge>
+          <h1 className="mt-3 font-heading text-3xl font-bold text-trust md:text-4xl">
             {t("apply.title")}
           </h1>
-          <p className="mt-2 text-muted-foreground">{t("apply.subtitle")}</p>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            We’re polishing a simple, mobile-first loan application. Until it’s live, contact us and we’ll guide you
+            through the next steps.
+          </p>
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button asChild className="bg-warm text-warm-foreground hover:bg-warm/90">
+              <Link to="/contact">
+                Contact us <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/products">Explore our offers</Link>
+            </Button>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-2xl px-4 py-10 md:px-6">
-        {/* Progress */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>
-              Step {step + 1} of {steps.length}
-            </span>
-            <span>{Math.round(progress)}%</span>
-          </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
-            <div className="h-full bg-warm transition-all" style={{ width: `${progress}%` }} />
+      <section className="mx-auto max-w-5xl px-4 py-12 md:px-6">
+        <div className="grid gap-6 md:grid-cols-5">
+          <Card className="border-border p-6 md:col-span-3 md:p-8">
+            <div className="mb-6 border-b border-border pb-4">
+              <h2 className="font-heading text-xl font-semibold text-trust">What to expect</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                A clean, short flow designed for speed and clarity.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Feature
+                title="Fewer steps"
+                description="A short application with clear prompts and helpful validation."
+              />
+              <Feature title="Mobile-first" description="Optimized for low-bandwidth and small screens." />
+              <Feature title="Fast follow-up" description="Get contacted by our team with next steps." />
+              <Feature title="Secure by design" description="Your information is handled with care." />
+            </div>
+
+            <div className="mt-6 rounded-xl border border-border bg-secondary/40 p-4">
+              <div className="flex items-start gap-3">
+                <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-trust/10 text-trust">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="font-heading font-semibold text-trust">Launching soon</div>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    We’re doing final checks for a smooth experience before we open applications.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <div className="space-y-4 md:col-span-2">
+            <Card className="border-border bg-trust p-6 text-trust-foreground">
+              <div className="flex items-start gap-3">
+                <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/10">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wide opacity-80">Guidance</p>
+                  <p className="mt-1 font-medium">Need help right now?</p>
+                  <p className="mt-2 text-sm opacity-80">
+                    Reach out and we’ll advise you on the best loan product and requirements.
+                  </p>
+                  <div className="mt-4">
+                    <Button asChild className="bg-warm text-warm-foreground hover:bg-warm/90">
+                      <Link to="/contact">
+                        Message us <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="border-border p-6">
+              <div className="flex items-start gap-3">
+                <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-warm/10 text-warm">
+                  <CheckCircle2 className="h-5 w-5" />
+                </div>
+              </div>
+            </Card>
+
+            <Button asChild variant="outline" className="w-full">
+              <Link to="/">Back to home</Link>
+            </Button>
           </div>
         </div>
-
-        <Card className="border-border p-6 md:p-8">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-trust/10 text-trust">
-              <Icon className="h-5 w-5" />
-            </div>
-            <h2 className="font-heading text-xl font-semibold">{steps[step].title}</h2>
-          </div>
-
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {step === 0 && (
-              <>
-                <Field label="Full name" error={form.formState.errors.fullName?.message}>
-                  <Input {...form.register("fullName")} placeholder="e.g. Mary Achol Deng" />
-                </Field>
-                <Field label="Phone number" error={form.formState.errors.phone?.message}>
-                  <Input
-                    type="tel"
-                    {...form.register("phone")}
-                    placeholder="e.g. +211 920 000 000"
-                  />
-                </Field>
-              </>
-            )}
-            {step === 1 && (
-              <>
-                <Field label="Village or town" error={form.formState.errors.village?.message}>
-                  <Input {...form.register("village")} placeholder="e.g. Konyokonyo" />
-                </Field>
-                <Field label="Region or state" error={form.formState.errors.region?.message}>
-                  <Input {...form.register("region")} placeholder="e.g. Central Equatoria" />
-                </Field>
-              </>
-            )}
-            {step === 2 && (
-              <>
-                <Field
-                  label="Loan amount needed (USD, $100 – $500)"
-                  error={form.formState.errors.amount?.message}
-                >
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    min={100}
-                    max={500}
-                    {...form.register("amount")}
-                  />
-                </Field>
-                <Field label="Loan type" error={form.formState.errors.loanType?.message}>
-                  <select
-                    {...form.register("loanType")}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <option>Farmer's Support Loan</option>
-                    <option>Women's Market Loan</option>
-                    <option>Artisan & Trades Loan</option>
-                    <option>Group Cooperative Loan</option>
-                    <option>Youth Enterprise Loan</option>
-                    <option>Emergency Bridge Loan</option>
-                  </select>
-                </Field>
-              </>
-            )}
-            {step === 3 && (
-              <Field label="Business purpose" error={form.formState.errors.purpose?.message}>
-                <Textarea
-                  rows={5}
-                  {...form.register("purpose")}
-                  placeholder="Briefly describe how you will use this loan..."
-                />
-              </Field>
-            )}
-
-            <div className="flex items-center justify-between gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setStep((s) => Math.max(s - 1, 0))}
-                disabled={step === 0}
-              >
-                <ArrowLeft className="mr-1 h-4 w-4" /> Back
-              </Button>
-
-              {step < steps.length - 1 ? (
-                <Button
-                  type="button"
-                  onClick={next}
-                  className="bg-trust text-trust-foreground hover:opacity-90"
-                >
-                  Next <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button type="submit" className="bg-warm text-warm-foreground hover:bg-warm/90">
-                  Submit application <CheckCircle2 className="ml-1 h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </form>
-        </Card>
-
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Prefer to talk? Field officer contact is yet to be assigned:{" "}
-          <span className="text-warm">
-            <Phone className="mr-1 inline h-3 w-3" />
-            Yet to be assigned
-          </span>
-        </p>
       </section>
     </SiteLayout>
   );
 }
 
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
+function Feature({ title, description }: { title: string; description: string }) {
   return (
-    <div>
-      <Label className="mb-1.5 block text-sm font-medium">{label}</Label>
-      {children}
-      {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+    <div className="rounded-xl border border-border bg-background p-4">
+      <div className="flex items-start gap-3">
+        <div className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-warm/10 text-warm">
+          <CheckCircle2 className="h-4 w-4" />
+        </div>
+        <div>
+          <div className="font-heading font-semibold text-trust">{title}</div>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+        </div>
+      </div>
     </div>
   );
 }

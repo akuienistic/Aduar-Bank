@@ -61,5 +61,6 @@ function localContactApiPlugin() {
 }
 
 export default defineConfig({
+  appType: "spa",
   plugins: [cloudflare(), localContactApiPlugin(), react(), tsconfigPaths(), tailwindcss()],
 });
