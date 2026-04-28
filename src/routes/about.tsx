@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  Download,
   Target,
   Eye,
   Heart,
-  FileText,
   Linkedin,
   Mail,
   Award,
@@ -14,6 +12,7 @@ import {
   GraduationCap,
   Code2,
   Users,
+  FileText,
 } from "lucide-react";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Card } from "@/components/ui/card";
@@ -75,12 +74,6 @@ const team = [
   },
 ];
 
-const reports = [
-  { year: "2024", title: "Annual Impact Report 2024", size: "2.1 MB" },
-  { year: "2023", title: "Annual Impact Report 2023", size: "1.8 MB" },
-  { year: "2022", title: "Annual Impact Report 2022", size: "1.6 MB" },
-];
-
 function AboutPage() {
   return (
     <SiteLayout>
@@ -137,7 +130,7 @@ function AboutPage() {
             {
               icon: Eye,
               title: "Vision",
-              text: "A South Sudan where every entrepreneur — regardless of geography or gender — can access dignified capital.",
+              text: "A South Sudan where every entrepreneur, regardless of geography or gender, can access dignified capital.",
             },
             {
               icon: Heart,
@@ -161,7 +154,7 @@ function AboutPage() {
       <section className="bg-secondary/50 py-14">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           <h2 className="font-heading text-2xl font-bold text-trust md:text-3xl">Leadership</h2>
-          <p className="mt-2 text-muted-foreground">The master minds behind Aduar Bank.</p>
+          <p className="mt-2 text-muted-foreground">Meet the team that makes Aduar Bank possible. They are the masterminds behind Aduar Bank.</p>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {team.map((m) => {
               const RoleIcon = m.icon;
@@ -237,30 +230,19 @@ function AboutPage() {
       <section className="mx-auto max-w-7xl px-4 py-14 md:px-6">
         <h2 className="font-heading text-2xl font-bold text-trust md:text-3xl">Annual Reports</h2>
         <p className="mt-2 text-muted-foreground">Transparency for our partners and donors.</p>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {reports.map((r) => (
-            <Card
-              key={r.year}
-              className="flex items-start gap-4 border-border p-5 transition hover:border-warm"
-            >
-              <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-warm/10 text-warm">
-                <FileText className="h-6 w-6" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {r.year}
-                </p>
-                <h3 className="font-heading font-semibold text-trust">{r.title}</h3>
-                <p className="text-xs text-muted-foreground">PDF · {r.size}</p>
-                <Button size="sm" variant="outline" className="mt-3" asChild>
-                  <a href="#" onClick={(e) => e.preventDefault()}>
-                    <Download className="mr-1 h-3.5 w-3.5" /> Download
-                  </a>
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
+        <Card className="mt-8 border-border p-6">
+          <div className="flex items-start gap-4">
+            <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-warm/10 text-warm">
+              <FileText className="h-6 w-6" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-heading text-lg font-semibold text-trust">Reports will be available soon</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                You’ll be able to download annual reports from this page once they are published.
+              </p>
+            </div>
+          </div>
+        </Card>
       </section>
     </SiteLayout>
   );
