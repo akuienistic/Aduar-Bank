@@ -1,3 +1,5 @@
+import nodemailer from "nodemailer";
+
 type ContactPayload = {
   name: string;
   email: string;
@@ -204,18 +206,23 @@ export async function onRequestPost(context: {
   await loadDotenv();
 
   try {
-    // SMTP-only project.
-    // Cloudflare Pages/Workers runtime cannot open raw TCP sockets, so SMTP (Nodemailer) will not work here.
-    // If your production deploy is hitting this file, switch the deployment to a Node runtime
-    // (e.g. Vercel using `api/contact.ts`) and set SMTP_* env vars there.
-    return json(
-      {
-        ok: false,
-        error:
-          "This deployment is using a Cloudflare Pages/Workers function, which cannot send email via SMTP. Deploy the Node/Vercel API (`/api/contact`) and configure SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS/MAIL_TO.",
-      },
-      { status: 500 },
-    );
+    const smtpHost = context.env.SMTP_HOST;
+    const smtpPort = context.env.SMTP_PORT;
+    const smtpUser = context.env.SMTP_USER;
+    const smtpPass = context.env.SMTP_PASS;
+    const mailFrom = context.env.MAIL_FROM;
+    const mailTo = context.env.MAIL_TO;
+
+    if (!smtpHost || !smtpPort || !smtpUser || !smtpPass || !mailFrom || !mailTo) {
+      return json(
+        {
+          ok: false,
+          error:
+            "Missing SMTP configuration. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM, and MAIL_TO in your deployment environment.",
+        },
+        { status: 500 },
+      );
+    }
 
     const raw = (await context.request.json()) as Partial<ContactPayload>;
     const payload: ContactPayload = {
@@ -242,12 +249,35 @@ export async function onRequestPost(context: {
       message: payload.message,
     });
 
-    void html;
-    void payload;
+    const emailSubject = `Contact: ${payload.subject}`;
+
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: parseInt(smtpPort, 10),
+      secure: parseInt(smtpPort, 10) === 465,
+      auth: {
+        user: smtpUser,
+        pass: smtpPass,
+      },
+    });
+
+    const sendResult = await transporter.sendMail({
+      from: mailFrom,
+      to: mailTo,
+      subject: emailSubject,
+      html,
+    });
+
+    if (!sendResult.accepted.length) {
+      return json(
+        { ok: false, error: "Failed to deliver email. Recipient not accepted." },
+        { status: 502 },
+      );
+    }
+
+    return json({ ok: true, messageId: sendResult.messageId });
   } catch (err) {
-    return json(
-      { ok: false, error: err instanceof Error ? err.message : "Unknown error" },
-      { status: 500 },
-    );
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    return json({ ok: false, error: errorMessage }, { status: 500 });
   }
 }
