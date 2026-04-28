@@ -8,18 +8,29 @@ export type ContactFormPayload = {
 
 import emailjs from "@emailjs/browser";
 
-const EMAILJS_SERVICE_ID = (import.meta as any).env?.VITE_EMAILJS_SERVICE_ID as string | undefined;
-const EMAILJS_TEMPLATE_ID = (import.meta as any).env?.VITE_EMAILJS_TEMPLATE_ID as string | undefined;
-const EMAILJS_PUBLIC_KEY = (import.meta as any).env?.VITE_EMAILJS_PUBLIC_KEY as string | undefined;
-const EMAILJS_TO_EMAIL = (import.meta as any).env?.VITE_EMAILJS_TO_EMAIL as string | undefined;
+function envTrim(key: string) {
+  const v = ((import.meta as any).env?.[key] as string | undefined) ?? "";
+  return v.trim();
+}
 
 export async function sendContactMessage(payload: ContactFormPayload) {
-  if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-    throw new Error("Email service is not configured. Please set VITE_EMAILJS_* environment variables.");
+  const serviceId = envTrim("VITE_EMAILJS_SERVICE_ID");
+  const templateId = envTrim("VITE_EMAILJS_TEMPLATE_ID");
+  const publicKey = envTrim("VITE_EMAILJS_PUBLIC_KEY");
+  const toEmail = envTrim("VITE_EMAILJS_TO_EMAIL");
+
+  const missing = [
+    !serviceId ? "VITE_EMAILJS_SERVICE_ID" : null,
+    !templateId ? "VITE_EMAILJS_TEMPLATE_ID" : null,
+    !publicKey ? "VITE_EMAILJS_PUBLIC_KEY" : null,
+  ].filter(Boolean) as string[];
+
+  if (missing.length) {
+    throw new Error(`Email service is not configured (missing: ${missing.join(", ")}).`);
   }
 
   const params = {
-    to_email: EMAILJS_TO_EMAIL || "",
+    to_email: toEmail,
     from_name: payload.name,
     reply_to: payload.email,
     from_email: payload.email,
@@ -30,8 +41,8 @@ export async function sendContactMessage(payload: ContactFormPayload) {
   };
 
   try {
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params, {
-      publicKey: EMAILJS_PUBLIC_KEY,
+    await emailjs.send(serviceId, templateId, params, {
+      publicKey,
     });
   } catch (e) {
     const err = e as any;
