@@ -122,14 +122,6 @@ function ApplyPage() {
               </div>
             </Card>
 
-            <Card className="border-border p-6">
-              <div className="flex items-start gap-3">
-                <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-warm/10 text-warm">
-                  <CheckCircle2 className="h-5 w-5" />
-                </div>
-              </div>
-            </Card>
-
             <Button asChild variant="outline" className="w-full">
               <Link to="/">Back to home</Link>
             </Button>
