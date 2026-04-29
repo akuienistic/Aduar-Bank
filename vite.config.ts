@@ -9,14 +9,14 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 function localContactApiPlugin() {
   return {
     name: "local-contact-api",
-    configureServer(server) {
-      server.middlewares.use((req, res, next) => {
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
         if (req.method !== "POST") return next();
         const url = req.url?.split("?")[0] ?? "";
         if (url !== "/api/contact") return next();
 
         let body = "";
-        req.on("data", (chunk) => {
+        req.on("data", (chunk: any) => {
           body += chunk;
         });
 
@@ -63,10 +63,4 @@ function localContactApiPlugin() {
 export default defineConfig({
   appType: "spa",
   plugins: [cloudflare(), localContactApiPlugin(), react(), tsconfigPaths(), tailwindcss()],
-  define: {
-    "import.meta.env.VITE_EMAILJS_SERVICE_ID": JSON.stringify(process.env.VITE_EMAILJS_SERVICE_ID),
-    "import.meta.env.VITE_EMAILJS_TEMPLATE_ID": JSON.stringify(process.env.VITE_EMAILJS_TEMPLATE_ID),
-    "import.meta.env.VITE_EMAILJS_PUBLIC_KEY": JSON.stringify(process.env.VITE_EMAILJS_PUBLIC_KEY),
-    "import.meta.env.VITE_EMAILJS_TO_EMAIL": JSON.stringify(process.env.VITE_EMAILJS_TO_EMAIL),
-  },
 });

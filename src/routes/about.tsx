@@ -50,7 +50,7 @@ const team = [
     icon: GraduationCap,
     tag: "Founder",
     bio: "A 'Lost Boy of Sudan' turned economist. MPA from Cornell, former World Bank analyst, and co-founder of Sawa Sawa Network.",
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/ayuen-garang-ajok-3a519853/",
   },
   {
     name: "David Nhial Kuol Garang",
